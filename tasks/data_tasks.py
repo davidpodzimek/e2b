@@ -1,14 +1,14 @@
-from crewai import Task, Agent
-from typing import Dict, Any
+from crewai import Agent, Task
+
 
 def create_data_reading_task(agent: Agent, dataset_path: str) -> Task:
     """
     Creates a task for reading and loading an unknown dataset.
-    
+
     Args:
         agent: The Data Reader agent
         dataset_path: Path to the dataset file
-        
+
     Returns:
         Task for loading the dataset
     """
@@ -35,22 +35,23 @@ def create_data_reading_task(agent: Agent, dataset_path: str) -> Task:
             "loading_method": "pandas.read_csv"  # The method used to load the file
         }
         """,
-        agent=agent
+        agent=agent,
     )
+
 
 def create_data_cleanup_task(agent: Agent, context) -> Task:
     """
     Creates a task for cleaning and preparing a dataset for analysis.
-    
+
     Args:
         agent: The Data Cleanup agent
         context: Information from the previous task
-        
+
     Returns:
         Task for cleaning and preparing the dataset
     """
     return Task(
-        description=f"""
+        description="""
         Clean and prepare the dataset provided by the Data Reader agent. Generate code and run it using the code interpreter tool. Always use real data, not placeholders or sample data.
         
         Your responsibilities:
@@ -84,22 +85,23 @@ def create_data_cleanup_task(agent: Agent, context) -> Task:
         }
         """,
         agent=agent,
-        context=context
+        context=context,
     )
+
 
 def create_data_analysis_task(agent: Agent, context) -> Task:
     """
     Creates a task for analyzing the prepared dataset.
-    
+
     Args:
         agent: The Data Analyzer agent
         data_info: Information about the dataset from the previous task
-        
+
     Returns:
         Task for analyzing the dataset
     """
     return Task(
-        description=f"""
+        description="""
         Analyze the dataset provided by the Data Cleanup agent. Read the suggestions and summary from the previous task.  Generate code and run it using the code interpreter tool. Always use real data, not placeholders or sample data.
         
         Your responsibilities:
@@ -130,23 +132,24 @@ def create_data_analysis_task(agent: Agent, context) -> Task:
         }
         """,
         agent=agent,
-        context=context
+        context=context,
     )
+
 
 def create_insight_generation_task(agent: Agent, context) -> Task:
     """
     Creates a task for generating insights from the analysis.
-    
+
     Args:
         agent: The Insight Generator agent
         analysis_results: Results from the data analysis task
         data_info: Information about the dataset from the first task
-        
+
     Returns:
         Task for generating insights
     """
     return Task(
-        description=f"""
+        description="""
         Generate meaningful insights based on the data analysis. Generate code and run it using the code interpreter tool. Always use real data, not placeholders or sample data.
                 
         Your responsibilities:
@@ -180,24 +183,80 @@ def create_insight_generation_task(agent: Agent, context) -> Task:
         }
         """,
         agent=agent,
-        context=context
+        context=context,
     )
+
+
+def create_time_series_prediction_task(agent: Agent, context) -> Task:
+    """
+    Creates a task for suggesting time series data suitable for ML model training and prediction.
+
+    Args:
+        agent: The Time Series Model Predictor agent
+        context: Results from previous tasks including data reading, cleanup, analysis, and insights
+
+    Returns:
+        Task for time series model prediction suggestions
+    """
+    return Task(
+        description="""
+        Analyze the dataset to identify time series data suitable for machine learning model training and prediction. Generate code and run it using the code interpreter tool. Always use real data, not placeholders or sample data.
+                
+        Your responsibilities:
+        1. Identify columns or features that contain time series data
+        2. Evaluate each time series for predictability (stationarity, seasonality, trends)
+        3. Suggest which time series would be good candidates for ML prediction models
+        4. Recommend appropriate model types for each candidate time series
+        5. If appropriate, demonstrate a simple forecasting example on one of the better candidates
+        6. Explain why certain time series are more suitable for prediction than others
+        
+        Focus on practical, actionable recommendations for time series prediction.
+        """,
+        expected_output="""
+        A dictionary containing:
+        1. Identified time series variables in the dataset
+        2. Evaluation of each time series for ML prediction suitability
+        3. Recommended model types for each suitable time series
+        4. Example forecasting code for at least one time series (if appropriate)
+        5. Explanation of prediction challenges and opportunities
+        
+        Example output format:
+        {
+            "time_series_variables": [
+                {
+                    "name": "variable_name",
+                    "suitability_score": 0-10,
+                    "characteristics": {"seasonality": true/false, "trend": true/false, ...},
+                    "recommended_models": ["ARIMA", "Prophet", ...],
+                    "prediction_horizon": "short-term/medium-term/long-term"
+                },
+                ...
+            ],
+            "example_forecast": "code snippet or results",
+            "challenges": [...],
+            "opportunities": [...]
+        }
+        """,
+        agent=agent,
+        context=context,
+    )
+
 
 def create_report_creation_task(agent: Agent, context) -> Task:
     """
     Creates a task for creating the final report.
-    
+
     Args:
         agent: The Report Creator agent
         insights: Insights generated from the previous task
         analysis_results: Results from the data analysis task
         data_info: Information about the dataset from the first task
-        
+
     Returns:
         Task for creating the final report
     """
     return Task(
-        description=f"""
+        description="""
         Create a comprehensive report based on the dataset analysis and insights. Always use real data, not placeholders or sample data.
                 
         Your responsibilities:
@@ -222,5 +281,5 @@ def create_report_creation_task(agent: Agent, context) -> Task:
         The report should be formatted as markdown.
         """,
         agent=agent,
-        context=context
+        context=context,
     )

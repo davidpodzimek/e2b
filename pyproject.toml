@@ -28,15 +28,16 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 88
-target-version = ["py39"]
+target-version = ["py312"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py39"
-select = ["E", "F", "I", "B"]
+target-version = "py312"
+lint.select = ["E", "F", "I", "B"]
+lint.ignore = ["E501"]  # Ignore line too long errors
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

@@ -1,12 +1,17 @@
 import os
+
 from crewai import Agent
-from tools.code_interpreter_tool import E2BCodeInterpreterTool
 from crewai_tools import FileReadTool
 
-def create_insight_generator_agent(file_read_tool: FileReadTool, code_interpreter: E2BCodeInterpreterTool) -> Agent:
+from tools.code_interpreter_tool import E2BCodeInterpreterTool
+
+
+def create_insight_generator_agent(
+    file_read_tool: FileReadTool, code_interpreter: E2BCodeInterpreterTool
+) -> Agent:
     """
     Creates an Insight Generator agent specialized in interpreting analysis results.
-    
+
     This agent is responsible for:
     1. Interpreting statistical results
     2. Extracting business value from patterns
@@ -23,5 +28,5 @@ def create_insight_generator_agent(file_read_tool: FileReadTool, code_interprete
         explain technical findings to non-technical audiences.""",
         tools=[code_interpreter],
         llm=os.getenv("LLM_MODEL", "gpt-4o-mini"),
-        verbose=True
+        verbose=True,
     )

@@ -1,14 +1,17 @@
 import os
+
 from crewai import Agent
-from typing import List
-from tools.code_interpreter_tool import E2BCodeInterpreterTool
 from crewai_tools import FileReadTool
 
+from tools.code_interpreter_tool import E2BCodeInterpreterTool
 
-def create_data_cleanup_agent(file_read_tool: FileReadTool, code_interpreter: E2BCodeInterpreterTool) -> Agent:
+
+def create_data_cleanup_agent(
+    file_read_tool: FileReadTool, code_interpreter: E2BCodeInterpreterTool
+) -> Agent:
     """
     Creates a Data Cleanup agent specialized in initial data preparation and analysis.
-    
+
     This agent is responsible for:
     1. Basic data cleaning and preparation
     2. Handling missing values and outliers
@@ -25,13 +28,16 @@ def create_data_cleanup_agent(file_read_tool: FileReadTool, code_interpreter: E2
         characteristics of datasets.""",
         tools=[code_interpreter],
         llm=os.getenv("LLM_MODEL", "gpt-4o-mini"),
-        verbose=True
+        verbose=True,
     )
 
-def create_data_analyzer_agent(file_read_tool: FileReadTool, code_interpreter: E2BCodeInterpreterTool) -> Agent:
+
+def create_data_analyzer_agent(
+    file_read_tool: FileReadTool, code_interpreter: E2BCodeInterpreterTool
+) -> Agent:
     """
     Creates a Data Analyzer agent specialized in statistical analysis and pattern finding.
-    
+
     This agent is responsible for:
     1. Performing statistical analysis on the dataset
     2. Identifying patterns and correlations
@@ -48,5 +54,5 @@ def create_data_analyzer_agent(file_read_tool: FileReadTool, code_interpreter: E
         extract valuable insights from any dataset.""",
         tools=[code_interpreter],
         llm=os.getenv("LLM_MODEL", "gpt-4o-mini"),
-        verbose=True
+        verbose=True,
     )
