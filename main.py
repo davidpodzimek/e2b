@@ -19,14 +19,14 @@ def setup_argparse():
     parser.add_argument(
         '--dataset', '-d',
         type=str,
-        required=True,
-        help='Path to the dataset file to analyze'
+        help='Path to the dataset file to analyze',
+        default='data/grocery.csv'
     )
     parser.add_argument(
         '--output', '-o',
         type=str,
-        default='output.md',
-        help='Path to save the output report (default: output.md)'
+        help='Path to save the output report (default: output.md)',
+        default='output.md'
     )
     parser.add_argument(
         '--format', '-f',

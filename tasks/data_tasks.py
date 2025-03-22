@@ -3,28 +3,65 @@ from typing import Dict, Any
 
 def create_data_reading_task(agent: Agent, dataset_path: str) -> Task:
     """
-    Creates a task for reading and preparing an unknown dataset.
+    Creates a task for reading and loading an unknown dataset.
     
     Args:
         agent: The Data Reader agent
         dataset_path: Path to the dataset file
         
     Returns:
-        Task for loading and preparing the dataset
+        Task for loading the dataset
     """
     return Task(
         description=f"""
-        Analyze and load the dataset at path: {dataset_path}
+        Load the dataset at path: {dataset_path}
         
         Your responsibilities:
         1. Identify the file format and appropriate method to load it
         2. Load the dataset using appropriate libraries
-        3. Perform initial data exploration (shape, columns, data types)
-        4. Handle basic data cleaning (missing values, duplicates)
+        3. Return the loaded raw dataset as a variable that can be passed to the next agent
+        
+        If you encounter any issues with loading the data, try multiple times.
+        """,
+        expected_output="""
+        A dictionary containing:
+        1. The raw dataset (stored in a variable that can be passed to the next agent)
+        2. Information about the file format and loading method used
+        
+        Example output format:
+        {
+            "data_variable": "df",  # The variable name containing the dataset
+            "file_format": "csv",  # The identified file format
+            "loading_method": "pandas.read_csv"  # The method used to load the file
+        }
+        """,
+        agent=agent
+    )
+
+def create_data_cleanup_task(agent: Agent, context) -> Task:
+    """
+    Creates a task for cleaning and preparing a dataset for analysis.
+    
+    Args:
+        agent: The Data Cleanup agent
+        context: Information from the previous task
+        
+    Returns:
+        Task for cleaning and preparing the dataset
+    """
+    return Task(
+        description=f"""
+        Clean and prepare the dataset provided by the Data Reader agent. Generate code and run it using the code interpreter tool. Always use real data, not placeholders or sample data.
+        
+        Your responsibilities:
+        1. Perform initial data exploration (shape, columns, data types)
+        2. Handle basic data cleaning (missing values, duplicates)
+        3. Convert data types appropriately
+        4. Handle outliers if necessary
         5. Provide summary statistics about the dataset
         6. Return the cleaned dataset as a variable and a summary of its contents
         
-        If you encounter any issues with loading the data, try multiple approaches and libraries.
+        Focus on making the data ready for analysis by the Data Analyzer agent.
         """,
         expected_output="""
         A dictionary containing:
@@ -34,7 +71,7 @@ def create_data_reading_task(agent: Agent, dataset_path: str) -> Task:
         
         Example output format:
         {
-            "data_variable": "df",  # The variable name containing the dataset
+            "data_variable": "df_clean",  # The variable name containing the cleaned dataset
             "summary": {
                 "shape": [rows, columns],
                 "columns": [...],
@@ -42,13 +79,15 @@ def create_data_reading_task(agent: Agent, dataset_path: str) -> Task:
                 "missing_values": {...},
                 "key_statistics": {...}
             },
-            "suggestions": [...]
+            "cleaning_steps": [...],  # List of cleaning steps performed
+            "suggestions": [...]  # Suggestions for analysis
         }
         """,
-        agent=agent
+        agent=agent,
+        context=context
     )
 
-def create_data_analysis_task(agent: Agent) -> Task:
+def create_data_analysis_task(agent: Agent, context) -> Task:
     """
     Creates a task for analyzing the prepared dataset.
     
@@ -61,7 +100,7 @@ def create_data_analysis_task(agent: Agent) -> Task:
     """
     return Task(
         description=f"""
-        Analyze the dataset provided by the Data Reader agent.
+        Analyze the dataset provided by the Data Cleanup agent. Read the suggestions and summary from the previous task.  Generate code and run it using the code interpreter tool. Always use real data, not placeholders or sample data.
         
         Your responsibilities:
         1. Explore relationships between variables
@@ -90,10 +129,11 @@ def create_data_analysis_task(agent: Agent) -> Task:
             "engineered_features": {...}
         }
         """,
-        agent=agent
+        agent=agent,
+        context=context
     )
 
-def create_insight_generation_task(agent: Agent) -> Task:
+def create_insight_generation_task(agent: Agent, context) -> Task:
     """
     Creates a task for generating insights from the analysis.
     
@@ -107,7 +147,7 @@ def create_insight_generation_task(agent: Agent) -> Task:
     """
     return Task(
         description=f"""
-        Generate meaningful insights based on the data analysis.
+        Generate meaningful insights based on the data analysis. Generate code and run it using the code interpreter tool. Always use real data, not placeholders or sample data.
                 
         Your responsibilities:
         1. Interpret the statistical findings and correlations
@@ -139,10 +179,11 @@ def create_insight_generation_task(agent: Agent) -> Task:
             "further_investigation": [...]
         }
         """,
-        agent=agent
+        agent=agent,
+        context=context
     )
 
-def create_report_creation_task(agent: Agent) -> Task:
+def create_report_creation_task(agent: Agent, context) -> Task:
     """
     Creates a task for creating the final report.
     
@@ -157,7 +198,7 @@ def create_report_creation_task(agent: Agent) -> Task:
     """
     return Task(
         description=f"""
-        Create a comprehensive report based on the dataset analysis and insights.
+        Create a comprehensive report based on the dataset analysis and insights. Always use real data, not placeholders or sample data.
                 
         Your responsibilities:
         1. Structure the report in a logical, easy-to-follow format
@@ -178,7 +219,8 @@ def create_report_creation_task(agent: Agent) -> Task:
         6. Conclusions and recommendations
         7. Appendix with additional details (if needed)
         
-        The report should be formatted as markdown by default, or in the specified format.
+        The report should be formatted as markdown.
         """,
-        agent=agent
+        agent=agent,
+        context=context
     )

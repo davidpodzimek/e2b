@@ -1,9 +1,10 @@
 import os
 from crewai import Agent
-from typing import List
 from tools.code_interpreter_tool import E2BCodeInterpreterTool
+from crewai_tools import FileReadTool
+from crewai_tools import FileWriterTool
 
-def create_report_creator_agent(code_interpreter: E2BCodeInterpreterTool) -> Agent:
+def create_report_creator_agent(file_read_tool: FileReadTool, file_write_tool: FileWriterTool, code_interpreter: E2BCodeInterpreterTool) -> Agent:
     """
     Creates a Report Creator agent specialized in generating final outputs.
     
@@ -21,7 +22,7 @@ def create_report_creator_agent(code_interpreter: E2BCodeInterpreterTool) -> Age
         complex findings in a clear, engaging way. You're skilled at creating visualizations
         that highlight key insights and can structure information logically to guide the
         reader through complex analyses to clear conclusions.""",
-        tools=[code_interpreter],
+        tools=[file_write_tool],
         llm=os.getenv("LLM_MODEL", "gpt-4o-mini"),
         verbose=True
     )

@@ -1,9 +1,9 @@
 import os
 from crewai import Agent
-from typing import List
 from tools.code_interpreter_tool import E2BCodeInterpreterTool
+from crewai_tools import FileReadTool
 
-def create_insight_generator_agent(code_interpreter: E2BCodeInterpreterTool) -> Agent:
+def create_insight_generator_agent(file_read_tool: FileReadTool, code_interpreter: E2BCodeInterpreterTool) -> Agent:
     """
     Creates an Insight Generator agent specialized in interpreting analysis results.
     
