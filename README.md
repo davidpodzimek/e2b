@@ -5,10 +5,23 @@ This project uses a crew of AI agents powered by CrewAI and E2B's code interpret
 ## Features
 
 - Automatically detect and load various data formats (CSV, JSON, Excel, etc.)
-- Perform comprehensive statistical analysis
-- Generate visualizations to understand patterns
-- Extract meaningful insights from patterns and correlations
+- Perform comprehensive data cleaning and preparation
+- Conduct statistical analysis and visualization
+- Generate meaningful insights from patterns and correlations
+- Identify time series data suitable for ML prediction models
+- Suggest appropriate machine learning models for time series forecasting
 - Create structured reports with actionable information
+
+## Workflow Agents
+
+The analysis is powered by a crew of specialized AI agents:
+
+1. **Data Reader**: Loads and identifies file formats of unknown datasets
+2. **Data Cleanup**: Prepares and cleans raw data for analysis
+3. **Data Analyzer**: Performs statistical analysis and creates visualizations
+4. **Insight Generator**: Extracts meaningful patterns and actionable insights
+5. **Time Series Model Predictor**: Evaluates data for ML model suitability and makes prediction recommendations
+6. **Report Creator**: Compiles findings into a comprehensive report
 
 ## Prerequisites
 
@@ -20,58 +33,5 @@ This project uses a crew of AI agents powered by CrewAI and E2B's code interpret
 
 1. Clone this repository
 2. Install dependencies:
-   ```
-   pip install -e .
-   ```
-3. Create a `.env` file with your API keys:
-   ```
-   E2B_API_KEY=your_e2b_api_key
-   OPENAI_API_KEY=your_openai_api_key
-   LLM_MODEL=gpt-4o-mini  # or your preferred model
-   ```
-
-## Usage
-
-Analyze a dataset with:
-
-```bash
-python main.py --dataset path/to/your/dataset.csv --output results.md
-```
-
-Options:
-- `--dataset`, `-d`: Path to the dataset file to analyze (required)
-- `--output`, `-o`: Path to save the output report (default: output.md)
-- `--format`, `-f`: Output format (markdown, json, html) (default: markdown)
-
-## How It Works
-
-1. **Data Reader Agent**: Loads the dataset, detects its format, and prepares it for analysis
-2. **Data Analyzer Agent**: Performs statistical analysis, identifies patterns, and creates visualizations
-3. **Insight Generator Agent**: Interprets the analysis results and extracts meaningful insights
-4. **Report Creator Agent**: Organizes the findings into a comprehensive, clear report
-
-The agents work together in a sequential workflow, passing their results to the next agent in the pipeline.
-
-## Example
-
-```bash
-python main.py --dataset customer_data.csv --output customer_insights.md
-```
-
-This will analyze the customer data, generate insights, and save a comprehensive report to `customer_insights.md`.
-
-## Development
-
-For development, install the dev dependencies:
-
-```bash
-pip install -e ".[dev]"
-```
-
-Run linting and type checking:
-
-```bash
-black .
-ruff check .
-mypy .
-```
+   ```bash
+   pip install -r requirements.txt
