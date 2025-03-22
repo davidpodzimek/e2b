@@ -1,53 +1,85 @@
-from dotenv import load_dotenv
-from crewai import Agent, Task  
-from code_interpreter_tool import E2BCodeInterpreterTool
-import json
+import sys
 
+sys.dont_write_bytecode = True
+
+import os
+import json
+import argparse
+from dotenv import load_dotenv
+from workflow.data_analysis_workflow import DataAnalysisWorkflow
+
+# Load environment variables
 load_dotenv()
 
+def setup_argparse():
+    """Set up command line argument parsing."""
+    parser = argparse.ArgumentParser(
+        description='Analyze an unknown dataset using a crew of AI agents.'
+    )
+    parser.add_argument(
+        '--dataset', '-d',
+        type=str,
+        required=True,
+        help='Path to the dataset file to analyze'
+    )
+    parser.add_argument(
+        '--output', '-o',
+        type=str,
+        default='output.md',
+        help='Path to save the output report (default: output.md)'
+    )
+    parser.add_argument(
+        '--format', '-f',
+        type=str,
+        choices=['markdown', 'json', 'html'],
+        default='markdown',
+        help='Output format for the report (default: markdown)'
+    )
+    return parser
+
 def main():
-
-    # Initialize the code interpreter tool
-    # We use result_as_answer=True to prevent the agent from changing the output after the last step
-    code_interpreter = E2BCodeInterpreterTool(result_as_answer=True);
-
+    """Main entry point for the application."""
+    parser = setup_argparse()
+    args = parser.parse_args()
+    
+    # Print welcome message
+    BLUE, RESET = '\033[94m', '\033[0m'
+    print(f"{BLUE}Starting data analysis with CrewAI...{RESET}")
+    print(f"{BLUE}Dataset: {args.dataset}{RESET}")
+    print(f"{BLUE}Output will be saved to: {args.output}{RESET}")
+    
     try:
-        # Create the CrewAI agent
-        agent = Agent(
-            role='Code Interpreter',
-            goal='Assist in interpreting code and performing tasks.',
-            backstory='An expert tool handler capable of executing code.',
-            tools=[code_interpreter],
-            llm='gpt-4o-mini',
-            verbose=True,
+        # Create and run the data analysis workflow
+        workflow = DataAnalysisWorkflow(
+            dataset_path=args.dataset,
+            output_format=args.format
         )
-
-        # Define the task at hand
-        # We specify that the code should use the print() function rather than leaving the variable on the last line
-        scrape_hacker_news = Task(
-            description='Scrape the Hacker News homepage.',
-            expected_output='Print the list of articles as a JSON array like [{"title","url"},...] using the print() function.',
-            agent=agent,
-        )
-
-        # Run the agent
-        task_output = agent.execute_task(scrape_hacker_news)
-
+        results = workflow.run()
+        
+        # Save the report to the specified output file
+        output_format = args.format
+        if output_format == 'json':
+            with open(args.output, 'w') as f:
+                json.dump(results, f, indent=2)
+        else:
+            # For markdown and HTML, just save the report text
+            with open(args.output, 'w') as f:
+                f.write(results["report"])
+        
+        print(f"{BLUE}Analysis complete! Results saved to {args.output}{RESET}")
+        
+        # Print a brief summary of findings
+        print(f"{BLUE}Summary of key insights:{RESET}")
         try:
-            # Parse the last printed line from the code interpreter's output
-            task_result = json.loads(task_output)["stdout"][-1]
-            parsed_result = json.loads(task_result)
-
-            # Print the results
-            BLUE, RESET = '\033[94m', '\033[0m'
-            print(f"{BLUE}{json.dumps(parsed_result, indent=2)}{RESET}")
-
-        except Exception as e:
-            print(f"Failed to parse Agent output: {e}")
-
-    finally:
-        # Close the code interpreter
-        code_interpreter.close()
+            if isinstance(results["insights"], dict) and "insights" in results["insights"]:
+                for i, insight in enumerate(results["insights"]["insights"][:3], 1):
+                    print(f"{BLUE}{i}. {insight.get('title', f'Insight {i}')}{RESET}")
+        except:
+            print(f"{BLUE}Insights available in the full report.{RESET}")
+            
+    except Exception as e:
+        print(f"Error during analysis: {e}")
+        raise
 
 if __name__ == "__main__":
     main()
