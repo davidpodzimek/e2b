@@ -1,9 +1,9 @@
 import os
 from crewai import Agent
-from typing import List
 from tools.code_interpreter_tool import E2BCodeInterpreterTool
+from crewai_tools import FileReadTool
 
-def create_data_reader_agent(code_interpreter: E2BCodeInterpreterTool) -> Agent:
+def create_data_reader_agent(code_interpreter: E2BCodeInterpreterTool, file_read_tool: FileReadTool) -> Agent:
     """
     Creates a Data Reader agent specialized in loading and parsing unknown datasets.
     
@@ -21,7 +21,7 @@ def create_data_reader_agent(code_interpreter: E2BCodeInterpreterTool) -> Agent:
         understand how to properly load and prepare data for analysis. You're skilled
         at detecting data types, handling missing values, and providing initial data
         summaries.""",
-        tools=[code_interpreter],
+        tools=[file_read_tool],
         llm=os.getenv("LLM_MODEL", "gpt-4o-mini"),
         verbose=True
     )

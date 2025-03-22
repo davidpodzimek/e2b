@@ -48,7 +48,7 @@ def create_data_reading_task(agent: Agent, dataset_path: str) -> Task:
         agent=agent
     )
 
-def create_data_analysis_task(agent: Agent, data_info: Dict[str, Any]) -> Task:
+def create_data_analysis_task(agent: Agent) -> Task:
     """
     Creates a task for analyzing the prepared dataset.
     
@@ -62,9 +62,6 @@ def create_data_analysis_task(agent: Agent, data_info: Dict[str, Any]) -> Task:
     return Task(
         description=f"""
         Analyze the dataset provided by the Data Reader agent.
-        
-        Dataset information:
-        {data_info}
         
         Your responsibilities:
         1. Explore relationships between variables
@@ -93,11 +90,10 @@ def create_data_analysis_task(agent: Agent, data_info: Dict[str, Any]) -> Task:
             "engineered_features": {...}
         }
         """,
-        agent=agent,
-        context=[data_info]
+        agent=agent
     )
 
-def create_insight_generation_task(agent: Agent, analysis_results: Dict[str, Any], data_info: Dict[str, Any]) -> Task:
+def create_insight_generation_task(agent: Agent) -> Task:
     """
     Creates a task for generating insights from the analysis.
     
@@ -112,13 +108,7 @@ def create_insight_generation_task(agent: Agent, analysis_results: Dict[str, Any
     return Task(
         description=f"""
         Generate meaningful insights based on the data analysis.
-        
-        Dataset information:
-        {data_info}
-        
-        Analysis results:
-        {analysis_results}
-        
+                
         Your responsibilities:
         1. Interpret the statistical findings and correlations
         2. Identify the most significant patterns and what they mean
@@ -149,11 +139,10 @@ def create_insight_generation_task(agent: Agent, analysis_results: Dict[str, Any
             "further_investigation": [...]
         }
         """,
-        agent=agent,
-        context=[data_info, analysis_results]
+        agent=agent
     )
 
-def create_report_creation_task(agent: Agent, insights: Dict[str, Any], analysis_results: Dict[str, Any], data_info: Dict[str, Any]) -> Task:
+def create_report_creation_task(agent: Agent) -> Task:
     """
     Creates a task for creating the final report.
     
@@ -169,16 +158,7 @@ def create_report_creation_task(agent: Agent, insights: Dict[str, Any], analysis
     return Task(
         description=f"""
         Create a comprehensive report based on the dataset analysis and insights.
-        
-        Dataset information:
-        {data_info}
-        
-        Analysis results:
-        {analysis_results}
-        
-        Generated insights:
-        {insights}
-        
+                
         Your responsibilities:
         1. Structure the report in a logical, easy-to-follow format
         2. Create clear visualizations that highlight key findings
@@ -200,6 +180,5 @@ def create_report_creation_task(agent: Agent, insights: Dict[str, Any], analysis
         
         The report should be formatted as markdown by default, or in the specified format.
         """,
-        agent=agent,
-        context=[data_info, analysis_results, insights]
+        agent=agent
     )

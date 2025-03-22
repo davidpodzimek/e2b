@@ -55,16 +55,16 @@ def main():
             output_format=args.format
         )
         results = workflow.run()
-        
-        # Save the report to the specified output file
-        output_format = args.format
-        if output_format == 'json':
-            with open(args.output, 'w') as f:
-                json.dump(results, f, indent=2)
-        else:
-            # For markdown and HTML, just save the report text
-            with open(args.output, 'w') as f:
-                f.write(results["report"])
+        print(results)
+        # # Save the report to the specified output file
+        # output_format = args.format
+        # if output_format == 'json':
+        #     with open(args.output, 'w') as f:
+        #         json.dump(results, f, indent=2)
+        # else:
+        #     # For markdown and HTML, just save the report text
+        #     with open(args.output, 'w') as f:
+        #         f.write(results["report"])
         
         print(f"{BLUE}Analysis complete! Results saved to {args.output}{RESET}")
         

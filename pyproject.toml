@@ -3,9 +3,9 @@ name = "dataanalysis"
 version = "0.1.0"
 description = "AI agent crew for analyzing unknown datasets"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = "==3.12"
 dependencies = [
-    "crewai>=0.28.0",
+    "crewai[tools]>=0.28.0",
     "e2b-code-interpreter>=0.14.1",
     "python-dotenv>=1.0.0",
     "pandas>=2.0.0",
